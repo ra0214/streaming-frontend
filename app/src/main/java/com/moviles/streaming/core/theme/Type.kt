@@ -1,4 +1,4 @@
-package com.alilopez.kt_demohilt.core.ui.theme
+package com.moviles.streaming.core.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.sp
 
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.Font
-import com.alilopez.kt_demohilt.R
+import com.moviles.streaming.R
 
 val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",

@@ -1,4 +1,4 @@
-package com.alilopez.kt_demohilt.core.ui.theme
+package com.moviles.streaming.core.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
