@@ -8,4 +8,8 @@ annotation class StreamingRESTRetrofit
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class StreamingWebSocketRetrofit
+annotation class ChatOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class WebSocketBaseUrl

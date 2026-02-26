@@ -1,4 +1,4 @@
-package com.alilopez.kt_demohilt.core.ui.theme
+package com.moviles.streaming.core.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF904B40)

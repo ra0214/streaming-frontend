@@ -5,16 +5,17 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.secrets.gradle)
 }
 
 android {
     namespace = "com.moviles.streaming"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.moviles.streaming"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -36,22 +37,32 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true  //Habilitar variables
+        buildConfig = true
         resValues = true
     }
 
     flavorDimensions.add("environment")
+
     productFlavors {
         create("dev") {
             dimension = "environment"
-            buildConfigField("String", "BASE_URL_STREAM", "\"https://rickandmortyapi.com/api/\"")
-            resValue("string", "app_name", "Demo (DEV)")
+            // Leemos de local.properties y nos aseguramos de que tengan comillas dobles
+            val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
+            val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
+            
+            buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
+            buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
+            resValue("string", "app_name", "Streaming (DEV)")
         }
 
         create("prod") {
             dimension = "environment"
-            buildConfigField("String", "BASE_URL_STREAM", "\"https://rickandmortyapi.com/api/\"")
-            resValue("string", "app_name", "Demo")
+            val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
+            val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
+            
+            buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
+            buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
+            resValue("string", "app_name", "Streaming")
         }
     }
 }
@@ -66,6 +77,12 @@ ksp {
     arg("hilt.disableModulesHaveInstallInCheck", "true")
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("androidx.navigation:navigation-compose:2.8.9")
+    }
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -76,17 +93,17 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    implementation(libs.androidx.compose.ui.text.google.fonts)      // G Fonts
-    implementation(libs.androidx.lifecycle.viewmodel.compose)       // viewModel()
-    implementation(libs.com.squareup.retrofit2.retrofit)            // Retrofit
-    implementation(libs.com.squareup.retrofit2.converter.json)      // JSON
-    implementation(libs.io.coil.kt.coil.compose)                    // Coil
-    implementation(libs.androidx.navigation.compose)                // Navigation
-    implementation(libs.androidx.compose.material.icons.extended)   // Icons extendend
-    implementation(libs.hilt.android)                               // Implementación de Hilt
-    implementation(libs.hilt.navigation.compose)                    // Integración con Jetpack Compose
-    ksp(libs.hilt.compiler)                                         // KSP
-
+    implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.com.squareup.retrofit2.retrofit)
+    implementation(libs.com.squareup.retrofit2.converter.json)
+    implementation(libs.com.squareup.okhttp3)
+    implementation(libs.io.coil.kt.coil.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

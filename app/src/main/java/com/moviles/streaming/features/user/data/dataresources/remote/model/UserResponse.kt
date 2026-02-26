@@ -16,6 +16,11 @@ data class UserCreateDto(
     val password: String
 )
 
+data class LoginRequestDto(
+    val username: String,
+    val password: String
+)
+
 data class UserLoginResponseDto(
     val access_token: String,
     val token_type: String,
