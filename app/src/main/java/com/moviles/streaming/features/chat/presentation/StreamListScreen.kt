@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.VideoCall
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,12 +22,15 @@ import com.moviles.streaming.features.chat.domain.entities.Stream
 @Composable
 fun StreamListScreen(
     viewerId: Int,
+    isStreamer: Boolean,
     onStreamClick: (streamerId: Int, viewerId: Int) -> Unit,
+    onStartStream: (streamerId: Int) -> Unit,
     viewModel: StreamListViewModel = hiltViewModel()
 ) {
     val streams by viewModel.streams.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val isStreaming by viewModel.isStreaming.collectAsState()
 
     Scaffold(
         topBar = {
@@ -40,34 +44,56 @@ fun StreamListScreen(
             )
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            when {
-                isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-                error != null -> {
-                    Text(
-                        text = error!!,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
+            if (isStreamer) {
+                Button(
+                    onClick = { viewModel.startStream(viewerId) },
+                    enabled = !isStreaming,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.VideoCall,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(if (isStreaming) "Streaming en vivo..." else "Empezar stream")
                 }
-                streams.isEmpty() -> {
-                    Text(
-                        text = "No hay streams activos",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(streams) { stream ->
-                            StreamItem(
-                                stream = stream,
-                                onClick = { onStreamClick(stream.streamerId, viewerId) }
-                            )
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    error != null -> {
+                        Text(
+                            text = error!!,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp)
+                        )
+                    }
+                    streams.isEmpty() -> {
+                        Text(
+                            text = "No hay streams activos",
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    else -> {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(streams) { stream ->
+                                StreamItem(
+                                    stream = stream,
+                                    onClick = { onStreamClick(stream.streamerId, viewerId) }
+                                )
+                            }
                         }
                     }
                 }
@@ -106,4 +132,3 @@ private fun StreamItem(stream: Stream, onClick: () -> Unit) {
         }
     }
 }
-

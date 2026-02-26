@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChatRepository {
     suspend fun getActiveStreams(): List<Stream>
     fun connectToStream(streamerId: Int, viewerId: Int): Flow<ChatMessage>
+    fun startStream(streamerId: Int): Flow<ChatMessage>
     fun sendMessage(message: String)
 
     fun disconnect()

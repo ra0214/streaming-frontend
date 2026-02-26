@@ -6,8 +6,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
-const val ROUTE_STREAM_LIST = "stream_list/{viewerId}"
+const val ROUTE_STREAM_LIST = "stream_list/{viewerId}/{isStreamer}"
 const val ROUTE_CHAT = "chat/{streamerId}/{viewerId}"
+
+fun NavHostController.navigateToStreamList(viewerId: Int, isStreamer: Boolean) {
+    navigate("stream_list/$viewerId/$isStreamer")
+}
 
 fun NavHostController.navigateToChat(streamerId: Int, viewerId: Int) {
     navigate("chat/$streamerId/$viewerId")
@@ -16,13 +20,21 @@ fun NavHostController.navigateToChat(streamerId: Int, viewerId: Int) {
 fun NavGraphBuilder.chatGraph(navController: NavHostController) {
     composable(
         route = ROUTE_STREAM_LIST,
-        arguments = listOf(navArgument("viewerId") { type = NavType.IntType })
+        arguments = listOf(
+            navArgument("viewerId") { type = NavType.IntType },
+            navArgument("isStreamer") { type = NavType.BoolType }
+        )
     ) { backStackEntry ->
         val viewerId = backStackEntry.arguments?.getInt("viewerId") ?: 0
+        val isStreamer = backStackEntry.arguments?.getBoolean("isStreamer") ?: false
         StreamListScreen(
             viewerId = viewerId,
+            isStreamer = isStreamer,
             onStreamClick = { streamerId, vid ->
                 navController.navigateToChat(streamerId, vid)
+            },
+            onStartStream = { streamerId ->
+                navController.navigateToChat(streamerId, viewerId)
             }
         )
     }

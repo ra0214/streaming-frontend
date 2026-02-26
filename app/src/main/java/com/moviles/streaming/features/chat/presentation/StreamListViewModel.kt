@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.moviles.streaming.features.chat.domain.entities.Stream
 import com.moviles.streaming.features.chat.domain.usecases.GetActiveStreamsUseCase
+import com.moviles.streaming.features.chat.domain.usecases.StartStreamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StreamListViewModel @Inject constructor(
-    private val getActiveStreamsUseCase: GetActiveStreamsUseCase
+    private val getActiveStreamsUseCase: GetActiveStreamsUseCase,
+    private val startStreamUseCase: StartStreamUseCase
 ) : ViewModel() {
 
     private val _streams = MutableStateFlow<List<Stream>>(emptyList())
@@ -23,6 +25,9 @@ class StreamListViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+
+    private val _isStreaming = MutableStateFlow(false)
+    val isStreaming: StateFlow<Boolean> = _isStreaming
 
     init {
         loadStreams()
@@ -38,6 +43,19 @@ class StreamListViewModel @Inject constructor(
                 _error.value = "Error al cargar streams: ${e.message}"
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun startStream(streamerId: Int) {
+        viewModelScope.launch {
+            _isStreaming.value = true
+            try {
+                startStreamUseCase(streamerId).collect {}
+            } catch (e: Exception) {
+                _error.value = "Error al iniciar stream: ${e.message}"
+            } finally {
+                _isStreaming.value = false
             }
         }
     }

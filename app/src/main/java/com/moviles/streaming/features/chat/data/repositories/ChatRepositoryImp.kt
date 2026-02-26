@@ -33,6 +33,38 @@ class ChatRepositoryImp @Inject constructor(
         return streamingWsAPI.getActiveStreams().streams.map { it.toDomain() }
     }
 
+    override fun startStream(streamerId: Int): Flow<ChatMessage> = callbackFlow {
+        val url = "${baseWsUrl}stream/${streamerId}"
+        val request = Request.Builder().url(url).build()
+
+        val listener = object : WebSocketListener() {
+            override fun onOpen(webSocket: WebSocket, response: Response) {}
+
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                try {
+                    val dto = gson.fromJson(text, ChatMessageDto::class.java)
+                    trySend(dto.toDomain())
+                } catch (e: Exception) {}
+            }
+
+            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                webSocket.close(1000, null)
+                close()
+            }
+
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                close(t)
+            }
+        }
+
+        webSocket = okHttpClient.newWebSocket(request, listener)
+
+        awaitClose {
+            webSocket?.close(1000, "Stream terminado")
+            webSocket = null
+        }
+    }
+
     override fun connectToStream(streamerId: Int, viewerId: Int): Flow<ChatMessage> = callbackFlow {
         val url = "${baseWsUrl}watch/${streamerId}/${viewerId}"
         val request = Request.Builder().url(url).build()

@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "stream_list/1"
+                    startDestination = "stream_list/3/true"
                 ) {
                     chatGraph(navController)
                 }
