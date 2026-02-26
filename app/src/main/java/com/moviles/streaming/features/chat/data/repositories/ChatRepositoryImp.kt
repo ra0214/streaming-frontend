@@ -1,7 +1,9 @@
 package com.moviles.streaming.features.chat.data.repositories
 
 import com.google.gson.Gson
-import com.moviles.streaming.core.network.StreamingWsAPI
+import com.moviles.streaming.core.di.ChatOkHttpClient
+import com.moviles.streaming.core.di.WebSocketBaseUrl
+import com.moviles.streaming.core.network.StreamingAPI
 import com.moviles.streaming.features.chat.data.mapper.toDomain
 import com.moviles.streaming.features.chat.data.models.ChatMessageDto
 import com.moviles.streaming.features.chat.data.models.ChatSendDto
@@ -19,16 +21,16 @@ import okhttp3.WebSocketListener
 import javax.inject.Inject
 
 class ChatRepositoryImp @Inject constructor(
-    private val streamingAPI: StreamingWsAPI,
-    private val okHttpClient: OkHttpClient,
-    private val baseWsUrl: String
+    private val streamingWsAPI: StreamingAPI,
+    @ChatOkHttpClient private val okHttpClient: OkHttpClient,
+    @WebSocketBaseUrl private val baseWsUrl: String
 ) : ChatRepository {
 
     private val gson = Gson()
     private var webSocket: WebSocket? = null
 
     override suspend fun getActiveStreams(): List<Stream> {
-        return streamingAPI.getActiveStreams().streams.map { it.toDomain() }
+        return streamingWsAPI.getActiveStreams().streams.map { it.toDomain() }
     }
 
     override fun connectToStream(streamerId: Int, viewerId: Int): Flow<ChatMessage> = callbackFlow {

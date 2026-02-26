@@ -1,5 +1,6 @@
 package com.moviles.streaming.core.network
 
+import com.moviles.streaming.features.chat.data.models.StreamsResponse
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserCreateDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserLoginResponseDto
@@ -27,4 +28,7 @@ interface StreamingAPI {
         @Field("username") username: String,
         @Field("password") password: String
     ): UserLoginResponseDto
+
+    @GET("streams/active/")
+    suspend fun getActiveStreams(): StreamsResponse
 }
