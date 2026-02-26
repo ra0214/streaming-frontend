@@ -1,6 +1,7 @@
 package com.moviles.streaming.features.user.domain.usecases
 
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserDto
+import com.moviles.streaming.features.user.domain.entities.User
 import com.moviles.streaming.features.user.domain.repositories.UserRepository
 import javax.inject.Inject
 
@@ -12,7 +13,7 @@ class UserRegisterUseCase @Inject constructor(
         username: String,
         rol: String,
         password: String
-    ): UserDto {
+    ): User {
         return userRepository.register(username, rol, password)
     }
 }
