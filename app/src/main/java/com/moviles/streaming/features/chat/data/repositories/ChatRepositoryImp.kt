@@ -33,7 +33,7 @@ class ChatRepositoryImp @Inject constructor(
         return try {
             val response = streamingWsAPI.getActiveStreams()
             response.streams.map { it.toDomain() }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
@@ -49,7 +49,7 @@ class ChatRepositoryImp @Inject constructor(
                 try {
                     val dto = gson.fromJson(text, ChatMessageDto::class.java)
                     trySend(dto.toDomain())
-                } catch (e: Exception) {}
+                } catch (_: Exception) {}
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
