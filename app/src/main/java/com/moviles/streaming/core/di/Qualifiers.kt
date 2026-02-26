@@ -9,3 +9,8 @@ annotation class StreamingRESTRetrofit
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class StreamingWebSocketRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class StreamingServerRetrofit
+

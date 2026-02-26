@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.secrets.gradle)
 }
 
 android {
@@ -41,9 +42,11 @@ android {
     }
 
     flavorDimensions.add("environment")
+
     productFlavors {
         create("dev") {
             dimension = "environment"
+<<<<<<< HEAD
             // Leemos de local.properties y nos aseguramos de que tengan comillas dobles
             val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
             val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
@@ -51,16 +54,23 @@ android {
             buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
             buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
             resValue("string", "app_name", "Demo (DEV)")
+=======
+            resValue("string", "app_name", "Streaming (DEV)")
+>>>>>>> origin/refactorizar
         }
 
         create("prod") {
             dimension = "environment"
+<<<<<<< HEAD
             val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
             val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
             
             buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
             buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
             resValue("string", "app_name", "Demo")
+=======
+            resValue("string", "app_name", "Streaming")
+>>>>>>> origin/refactorizar
         }
     }
 }

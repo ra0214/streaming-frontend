@@ -17,17 +17,21 @@ object NetworkModule {
     @StreamingRESTRetrofit
     fun provideStreamingRetrofit(): Retrofit {
         return Retrofit.Builder()
+<<<<<<< HEAD
             .baseUrl(BuildConfig.BASE_URL_STREAM)
+=======
+            .baseUrl(BuildConfig.backend_rest_url)
+>>>>>>> origin/refactorizar
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
     @Provides
     @Singleton
-    @StreamingWebSocketRetrofit
-    fun provideStreamingWebSocketRetrofit(): Retrofit {
+    @StreamingServerRetrofit
+    fun provideStreamingServerRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL_WEBSOCKET)
+            .baseUrl(BuildConfig.backend_streaming_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

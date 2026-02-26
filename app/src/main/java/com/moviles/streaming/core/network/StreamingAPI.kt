@@ -1,13 +1,22 @@
 package com.moviles.streaming.core.network
 
+<<<<<<< HEAD
 import com.moviles.streaming.features.user.data.dataresources.remote.model.LoginRequestDto
+=======
+>>>>>>> origin/refactorizar
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserCreateDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserLoginResponseDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UsersResponse
 import retrofit2.http.Body
+<<<<<<< HEAD
+=======
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+>>>>>>> origin/refactorizar
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface StreamingAPI {
     @GET("users/")
@@ -17,8 +26,17 @@ interface StreamingAPI {
     suspend fun createUser(@Body user: UserCreateDto): UserDto
 
     @GET("users/username/{username}/")
-    suspend fun getUserByUsername(username: String): UserDto
+    suspend fun getUserByUsername(@Path("username") username: String): UserDto
 
+    @FormUrlEncoded
     @POST("auth/login/")
+<<<<<<< HEAD
     suspend fun login(@Body request: LoginRequestDto): UserLoginResponseDto
 }
+=======
+    suspend fun login(
+        @Field("username") username: String,
+        @Field("password") password: String
+    ): UserLoginResponseDto
+}
+>>>>>>> origin/refactorizar
