@@ -1,5 +1,6 @@
 package com.moviles.streaming.core.di
 
+import com.moviles.streaming.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,13 +12,22 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @Provides
+    @Singleton
+    @StreamingRESTRetrofit
+    fun provideStreamingRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL_STREAMING)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
     @Provides
     @Singleton
-    @RickAndMortyRetrofit
-    fun provideRickAndMortyRetrofit(): Retrofit {
+    @StreamingWebSocketRetrofit
+    fun provideStreamingWebSocketRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://rickandmortyapi.com/api/")
+            .baseUrl(BuildConfig.BASE_URL_WEBSOCKET)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

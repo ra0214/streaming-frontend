@@ -4,4 +4,8 @@ import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class RickAndMortyRetrofit
+annotation class StreamingRESTRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class StreamingWebSocketRetrofit
