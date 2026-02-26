@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(
                             viewModel = loginViewModel,
                             onLoginSuccess = {
-                                // Al tener éxito, pasamos al flujo de navegación de chat
                                 currentScreen = "main_flow"
                             },
                             onNavigateToRegister = {
@@ -56,7 +55,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     "main_flow" -> {
-                        // Aquí usamos el NavHost de tu compañero para el chat
                         NavHost(
                             navController = navController,
                             startDestination = "stream_list/1"

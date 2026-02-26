@@ -1,4 +1,4 @@
-package com.moviles.streaming.features.chat.data.models
+package com.moviles.streaming.features.chat.data.dataresources.remote.model
 
 data class ChatMessageDto(
     val type: String,
@@ -9,5 +9,3 @@ data class ChatMessageDto(
 data class ChatSendDto(
     val content: String
 )
-
-

@@ -1,4 +1,4 @@
-package com.moviles.streaming.features.chat.data.models
+package com.moviles.streaming.features.chat.data.dataresources.remote.model
 
 data class StreamDto(
     val streamer_id: Int,

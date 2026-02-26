@@ -1,13 +1,9 @@
 package com.moviles.streaming.features.user.data.repositories
 
 import com.moviles.streaming.core.network.StreamingAPI
-<<<<<<< HEAD
-import com.moviles.streaming.features.user.data.dataresources.remote.model.LoginRequestDto
-=======
 import com.moviles.streaming.features.user.data.dataresources.remote.mapper.toDomain
->>>>>>> origin/refactorizar
+import com.moviles.streaming.features.user.data.dataresources.remote.model.LoginRequestDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserCreateDto
-import com.moviles.streaming.features.user.data.dataresources.remote.model.UserDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserLoginResponseDto
 import com.moviles.streaming.features.user.domain.entities.User
 import com.moviles.streaming.features.user.domain.repositories.UserRepository
@@ -27,7 +23,7 @@ class UserRepositoryImp @Inject constructor(
             rol = rol,
             password = password
         )
-        return streamingAPI.createUser(userCreateDto)
+        return streamingAPI.createUser(userCreateDto).toDomain()
     }
 
     override suspend fun login(

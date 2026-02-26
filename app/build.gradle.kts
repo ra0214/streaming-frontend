@@ -46,31 +46,23 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
-<<<<<<< HEAD
             // Leemos de local.properties y nos aseguramos de que tengan comillas dobles
             val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
             val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
             
             buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
             buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
-            resValue("string", "app_name", "Demo (DEV)")
-=======
             resValue("string", "app_name", "Streaming (DEV)")
->>>>>>> origin/refactorizar
         }
 
         create("prod") {
             dimension = "environment"
-<<<<<<< HEAD
             val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
             val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
             
             buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
             buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
-            resValue("string", "app_name", "Demo")
-=======
             resValue("string", "app_name", "Streaming")
->>>>>>> origin/refactorizar
         }
     }
 }
@@ -111,6 +103,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
+    implementation(libs.com.squareup.okhttp3)
     implementation(libs.io.coil.kt.coil.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)

@@ -1,9 +1,5 @@
 package com.moviles.streaming.features.chat.domain.repositories
 
-<<<<<<< HEAD
-interface ChatRepository {
-}
-=======
 import com.moviles.streaming.features.chat.domain.entities.ChatMessage
 import com.moviles.streaming.features.chat.domain.entities.Stream
 import kotlinx.coroutines.flow.Flow
@@ -16,5 +12,3 @@ interface ChatRepository {
     fun disconnect()
 }
 
-
->>>>>>> origin/refactorizar

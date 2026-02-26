@@ -1,7 +1,7 @@
-package com.moviles.streaming.features.chat.data.mapper
+package com.moviles.streaming.features.chat.data.dataresources.remote.mapper
 
-import com.moviles.streaming.features.chat.data.models.ChatMessageDto
-import com.moviles.streaming.features.chat.data.models.StreamDto
+import com.moviles.streaming.features.chat.data.dataresources.remote.model.ChatMessageDto
+import com.moviles.streaming.features.chat.data.dataresources.remote.model.StreamDto
 import com.moviles.streaming.features.chat.domain.entities.ChatMessage
 import com.moviles.streaming.features.chat.domain.entities.Stream
 
@@ -25,4 +25,3 @@ fun StreamDto.toDomain(): Stream {
         viewersCount = this.viewers_count
     )
 }
-
