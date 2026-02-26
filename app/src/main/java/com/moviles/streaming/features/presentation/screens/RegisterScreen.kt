@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.moviles.streaming.features.auth.presentation.viewmodel.RegisterViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
@@ -26,8 +27,10 @@ fun RegisterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var rol by remember { mutableStateOf("follower") } // Predeterminado
+    var expanded by remember { mutableStateOf(false) }
+    val roles = listOf("follower", "streamer")
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -38,7 +41,7 @@ fun RegisterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black), // Fondo negro total
+            .background(Color.Black),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -46,9 +49,7 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF1A1A1A) // Gris muy oscuro para la ventana
-            ),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Column(
@@ -64,14 +65,6 @@ fun RegisterScreen(
                     color = Color.White
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Text(
-                    text = "Únete a nosotros hoy mismo",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-
                 Spacer(modifier = Modifier.height(32.dp))
 
                 OutlinedTextField(
@@ -92,22 +85,43 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Correo Electrónico", color = Color.Gray) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.DarkGray,
-                        cursorColor = Color.White
+                // Selector de Rol (Exposed Dropdown Menu)
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = rol,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Rol", color = Color.Gray) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = Color.DarkGray
+                        )
                     )
-                )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(Color(0xFF1A1A1A))
+                    ) {
+                        roles.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption, color = Color.White) },
+                                onClick = {
+                                    rol = selectionOption
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -135,41 +149,34 @@ fun RegisterScreen(
                     CircularProgressIndicator(color = Color.White)
                 } else {
                     Button(
-                        onClick = { viewModel.register(userName, email, password) },
+                        onClick = { viewModel.register(userName, rol, password) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(12.dp),
-                        enabled = userName.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
+                        enabled = userName.isNotBlank() && password.isNotBlank(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
                             contentColor = Color.Black
                         )
                     ) {
-                        Text("REGISTRARSE", fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                        Text("REGISTRARSE", fontWeight = FontWeight.Bold)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 TextButton(onClick = onBackToLogin) {
-                    Text(
-                        "¿Ya tienes cuenta? Inicia sesión",
-                        color = Color.White,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Text("¿Ya tienes cuenta? Inicia sesión", color = Color.White)
                 }
 
                 AnimatedVisibility(visible = uiState.error != null) {
-                    uiState.error?.let {
-                        Text(
-                            text = it,
-                            color = Color.Red,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
+                    Text(
+                        text = uiState.error ?: "",
+                        color = Color.Red,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
                 }
             }
         }

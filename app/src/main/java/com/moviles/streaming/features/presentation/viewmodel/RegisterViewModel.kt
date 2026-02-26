@@ -1,10 +1,15 @@
 package com.moviles.streaming.features.auth.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.moviles.streaming.features.user.domain.usecases.UserRegisterUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class RegisterUiState(
     val isLoading: Boolean = false,
@@ -12,16 +17,23 @@ data class RegisterUiState(
     val error: String? = null
 )
 
-class RegisterViewModel : ViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val registerUseCase: UserRegisterUseCase
+) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
-    fun register(userName: String, email: String, password: String) {
-        // Simulación de registro sin funcionalidad real de red
+    fun register(userName: String, rol: String, password: String) {
         _uiState.update { it.copy(isLoading = true, error = null) }
-        
-        // Simplemente marcamos como éxito directamente para que la vista pueda navegar
-        _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+        viewModelScope.launch {
+            try {
+                registerUseCase(userName, rol, password)
+                _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = e.message ?: "Error al registrar") }
+            }
+        }
     }
 
     fun resetState() {

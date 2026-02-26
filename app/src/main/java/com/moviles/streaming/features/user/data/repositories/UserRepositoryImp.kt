@@ -1,6 +1,7 @@
 package com.moviles.streaming.features.user.data.repositories
 
 import com.moviles.streaming.core.network.StreamingAPI
+import com.moviles.streaming.features.user.data.dataresources.remote.model.LoginRequestDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserCreateDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserLoginResponseDto
@@ -21,9 +22,7 @@ class UserRepositoryImp @Inject constructor(
             rol = rol,
             password = password
         )
-
-        val userDto = streamingAPI.createUser(userCreateDto)
-        return userDto.toDomain()
+        return streamingAPI.createUser(userCreateDto)
     }
 
     override suspend fun login(
@@ -31,10 +30,10 @@ class UserRepositoryImp @Inject constructor(
         password: String
     ): UserLoginResponseDto {
         return streamingAPI.login(
-            username = username,
-            password = password
+            LoginRequestDto(
+                username = username,
+                password = password
+            )
         )
     }
 }
-
-

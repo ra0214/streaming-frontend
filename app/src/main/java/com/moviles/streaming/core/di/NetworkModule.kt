@@ -17,7 +17,7 @@ object NetworkModule {
     @StreamingRESTRetrofit
     fun provideStreamingRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL_STREAMING)
+            .baseUrl(BuildConfig.BASE_URL_STREAM)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
