@@ -1,4 +1,4 @@
-package com.moviles.streaming.features.auth.presentation.viewmodel
+package com.moviles.streaming.features.user.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,24 +11,33 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class LoginUiState(
-    val isLoading: Boolean = false,
-    val isSuccess: Boolean = false,
-    val error: String? = null
-)
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: UserLoginUseCase
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    fun login(userName: String, password: String) {
-        _uiState.update { it.copy(isLoading = true, error = null) }
+    private val _uiState = MutableStateFlow(LoginUIState())
+    val uiState: StateFlow<LoginUIState> = _uiState.asStateFlow()
+
+    private val _username = MutableStateFlow("")
+    val username: StateFlow<String> = _username.asStateFlow()
+
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password.asStateFlow()
+
+    fun onUsernameChange(username: String) {
+        _username.value = username
+    }
+
+    fun onPasswordChange(password: String) {
+        _password.value = password
+    }
+
+    fun onLoginClick() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val result = loginUseCase(userName, password)
+                val result = loginUseCase(_username.value, _password.value)
                 if (result.access_token.isNotEmpty()) {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 } else {
@@ -39,8 +48,8 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun resetState() {
-        _uiState.update { LoginUiState() }
+        _uiState.update { LoginUIState() }
     }
 }

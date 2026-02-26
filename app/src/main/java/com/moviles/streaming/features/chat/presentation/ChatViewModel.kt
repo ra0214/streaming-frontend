@@ -2,13 +2,14 @@ package com.moviles.streaming.features.chat.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.moviles.streaming.features.chat.domain.entities.ChatMessage
 import com.moviles.streaming.features.chat.domain.usecases.ConnectToChatUseCase
 import com.moviles.streaming.features.chat.domain.usecases.DisconnectChatUseCase
 import com.moviles.streaming.features.chat.domain.usecases.SendChatMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,25 +20,41 @@ class ChatViewModel @Inject constructor(
     private val disconnectChatUseCase: DisconnectChatUseCase
 ) : ViewModel() {
 
-    private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
-    val messages: StateFlow<List<ChatMessage>> = _messages
+    private val _uiState = MutableStateFlow(ChatUiState())
+    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
-    private val _isConnected = MutableStateFlow(false)
-    val isConnected: StateFlow<Boolean> = _isConnected
+    private val _inputText = MutableStateFlow("")
+    val inputText: StateFlow<String> = _inputText.asStateFlow()
+
+    fun onInputChange(text: String) {
+        _inputText.value = text
+    }
 
     fun connect(streamerId: Int, viewerId: Int) {
         viewModelScope.launch {
-            _isConnected.value = true
-            connectToChatUseCase(streamerId, viewerId).collect { message ->
-                _messages.value = _messages.value + message
+            _uiState.update { it.copy(isConnected = true, error = null) }
+            try {
+                connectToChatUseCase(streamerId, viewerId).collect { message ->
+                    _uiState.update { it.copy(messages = it.messages + message) }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isConnected = false,
+                        error = "Error de conexión: ${e.localizedMessage}"
+                    )
+                }
+            } finally {
+                _uiState.update { it.copy(isConnected = false) }
             }
-            _isConnected.value = false
         }
     }
 
-    fun sendMessage(text: String) {
+    fun sendMessage() {
+        val text = _inputText.value
         if (text.isNotBlank()) {
             sendChatMessageUseCase(text)
+            _inputText.value = ""
         }
     }
 
@@ -46,4 +63,3 @@ class ChatViewModel @Inject constructor(
         disconnectChatUseCase()
     }
 }
-

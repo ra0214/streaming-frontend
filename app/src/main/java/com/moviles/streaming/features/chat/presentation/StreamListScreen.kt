@@ -9,12 +9,12 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moviles.streaming.features.chat.domain.entities.Stream
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,9 +24,7 @@ fun StreamListScreen(
     onStreamClick: (streamerId: Int, viewerId: Int) -> Unit,
     viewModel: StreamListViewModel = hiltViewModel()
 ) {
-    val streams by viewModel.streams.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -46,16 +44,18 @@ fun StreamListScreen(
                 .padding(padding)
         ) {
             when {
-                isLoading -> {
+                uiState.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                error != null -> {
+                uiState.error != null -> {
                     Text(
-                        text = error!!,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                        text = uiState.error!!,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp)
                     )
                 }
-                streams.isEmpty() -> {
+                uiState.streams.isEmpty() -> {
                     Text(
                         text = "No hay streams activos",
                         modifier = Modifier.align(Alignment.Center)
@@ -63,7 +63,7 @@ fun StreamListScreen(
                 }
                 else -> {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(streams) { stream ->
+                        items(uiState.streams) { stream ->
                             StreamItem(
                                 stream = stream,
                                 onClick = { onStreamClick(stream.streamerId, viewerId) }
@@ -106,4 +106,3 @@ private fun StreamItem(stream: Stream, onClick: () -> Unit) {
         }
     }
 }
-

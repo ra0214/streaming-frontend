@@ -1,4 +1,4 @@
-package com.moviles.streaming.features.auth.presentation.screens
+package com.moviles.streaming.features.user.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -16,28 +16,34 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.moviles.streaming.features.auth.presentation.viewmodel.LoginViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.moviles.streaming.features.user.presentation.viewmodel.RegisterViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onBackToLogin: () -> Unit,
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    var userName by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val username by viewModel.username.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
+    val rol by viewModel.rol.collectAsStateWithLifecycle()
+    var expanded by remember { mutableStateOf(false) }
+    val roles = listOf("follower", "streamer")
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onLoginSuccess()
+            onRegisterSuccess()
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black), // Fondo negro total
+            .background(Color.Black),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -45,9 +51,7 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF1A1A1A) // Gris muy oscuro para la ventana flotante
-            ),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Column(
@@ -57,25 +61,17 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Iniciar Sesión",
+                    text = "Crear Cuenta",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color.White
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Text(
-                    text = "Bienvenido de nuevo",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-
                 Spacer(modifier = Modifier.height(32.dp))
 
                 OutlinedTextField(
-                    value = userName,
-                    onValueChange = { userName = it },
+                    value = username,
+                    onValueChange = { viewModel.onUsernameChange(it) },
                     label = { Text("Usuario", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -91,9 +87,49 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Selector de Rol (Exposed Dropdown Menu)
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = rol,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Rol", color = Color.Gray) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = Color.DarkGray
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(Color(0xFF1A1A1A))
+                    ) {
+                        roles.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption, color = Color.White) },
+                                onClick = {
+                                    viewModel.onRolChange(selectionOption)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { viewModel.onPasswordChange(it) },
                     label = { Text("Contraseña", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -115,40 +151,34 @@ fun LoginScreen(
                     CircularProgressIndicator(color = Color.White)
                 } else {
                     Button(
-                        onClick = { viewModel.login(userName, password) },
+                        onClick = { viewModel.onRegisterClick() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(12.dp),
+                        enabled = username.isNotBlank() && password.isNotBlank(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
                             contentColor = Color.Black
                         )
                     ) {
-                        Text("ENTRAR", fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                        Text("REGISTRARSE", fontWeight = FontWeight.Bold)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                TextButton(onClick = onNavigateToRegister) {
-                    Text(
-                        "¿No tienes cuenta? Regístrate",
-                        color = Color.White,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                TextButton(onClick = onBackToLogin) {
+                    Text("¿Ya tienes cuenta? Inicia sesión", color = Color.White)
                 }
 
                 AnimatedVisibility(visible = uiState.error != null) {
-                    uiState.error?.let {
-                        Text(
-                            text = it,
-                            color = Color.Red,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
+                    Text(
+                        text = uiState.error ?: "",
+                        color = Color.Red,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
                 }
             }
         }

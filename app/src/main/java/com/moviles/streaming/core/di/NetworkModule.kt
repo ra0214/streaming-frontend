@@ -37,6 +37,6 @@ object NetworkModule {
     @Singleton
     @WebSocketBaseUrl
     fun provideWebSocketBaseUrl(): String {
-        return BuildConfig.BASE_URL_WEBSOCKET
+        return BuildConfig.backend_ws_url
     }
 }

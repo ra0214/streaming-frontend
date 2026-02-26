@@ -1,13 +1,13 @@
 package com.moviles.streaming.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.moviles.streaming.features.presentation.screens.LoginScreen
-import com.moviles.streaming.features.presentation.screens.RegisterScreen
+import com.moviles.streaming.features.user.presentation.screens.LoginScreen
+
+import com.moviles.streaming.features.user.presentation.screens.RegisterScreen
 import com.moviles.streaming.features.chat.presentation.ChatScreen
 import com.moviles.streaming.features.chat.presentation.StreamListScreen
 
@@ -15,13 +15,10 @@ import com.moviles.streaming.features.chat.presentation.StreamListScreen
 fun NavigationWrapper() {
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = Login
-    ) {
+    NavHost(navController = navController, startDestination = Login) {
+
         composable<Login> {
             LoginScreen(
-                viewModel = hiltViewModel(),
                 onLoginSuccess = {
                     navController.navigate(StreamList(viewerId = 1)) {
                         popUpTo(Login) { inclusive = true }
@@ -35,7 +32,6 @@ fun NavigationWrapper() {
 
         composable<Register> {
             RegisterScreen(
-                viewModel = hiltViewModel(),
                 onRegisterSuccess = {
                     navController.navigate(Login) {
                         popUpTo(Register) { inclusive = true }
@@ -47,23 +43,21 @@ fun NavigationWrapper() {
             )
         }
 
-        composable<StreamList> { backStackEntry ->
-            val route = backStackEntry.toRoute<StreamList>()
+        composable<StreamList> {
+            val route = it.toRoute<StreamList>()
             StreamListScreen(
                 viewerId = route.viewerId,
-                viewModel = hiltViewModel(),
                 onStreamClick = { streamerId, viewerId ->
                     navController.navigate(Chat(streamerId = streamerId, viewerId = viewerId))
                 }
             )
         }
 
-        composable<Chat> { backStackEntry ->
-            val route = backStackEntry.toRoute<Chat>()
+        composable<Chat> {
+            val route = it.toRoute<Chat>()
             ChatScreen(
                 streamerId = route.streamerId,
                 viewerId = route.viewerId,
-                viewModel = hiltViewModel(),
                 onBack = { navController.popBackStack() }
             )
         }

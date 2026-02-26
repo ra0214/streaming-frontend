@@ -8,11 +8,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moviles.streaming.features.chat.domain.entities.ChatMessage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,24 +26,24 @@ fun ChatScreen(
     onBack: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-    val messages by viewModel.messages.collectAsState()
-    var inputText by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val inputText by viewModel.inputText.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
     LaunchedEffect(streamerId, viewerId) {
         viewModel.connect(streamerId, viewerId)
     }
 
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
+    LaunchedEffect(uiState.messages.size) {
+        if (uiState.messages.isNotEmpty()) {
+            listState.animateScrollToItem(uiState.messages.size - 1)
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Stream de viewer $streamerId") },
+                title = { Text("Stream #$streamerId") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
@@ -49,27 +52,32 @@ fun ChatScreen(
             )
         },
         bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    value = inputText,
-                    onValueChange = { inputText = it },
-                    placeholder = { Text("Escribe un mensaje...") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                IconButton(
-                    onClick = {
-                        viewModel.sendMessage(inputText)
-                        inputText = ""
-                    }
+            Column {
+                if (uiState.error != null) {
+                    Text(
+                        text = uiState.error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Enviar")
+                    TextField(
+                        value = inputText,
+                        onValueChange = { viewModel.onInputChange(it) },
+                        placeholder = { Text("Escribe un mensaje...") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = { viewModel.sendMessage() }) {
+                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Enviar")
+                    }
                 }
             }
         }
@@ -82,7 +90,7 @@ fun ChatScreen(
                 .padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            items(messages) { message ->
+            items(uiState.messages) { message ->
                 ChatMessageItem(message)
             }
         }
@@ -121,4 +129,3 @@ private fun ChatMessageItem(message: ChatMessage) {
         }
     }
 }
-

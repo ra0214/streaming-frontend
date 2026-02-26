@@ -1,12 +1,17 @@
 package com.moviles.streaming.features.chat.data.repositories
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.moviles.streaming.core.di.ChatOkHttpClient
 import com.moviles.streaming.core.di.WebSocketBaseUrl
 import com.moviles.streaming.core.network.StreamingAPI
 import com.moviles.streaming.features.chat.data.dataresources.remote.mapper.toDomain
 import com.moviles.streaming.features.chat.data.dataresources.remote.model.ChatMessageDto
 import com.moviles.streaming.features.chat.data.dataresources.remote.model.ChatSendDto
+import com.moviles.streaming.features.chat.data.dataresources.remote.model.MessageContentDto
 import com.moviles.streaming.features.chat.domain.entities.ChatMessage
 import com.moviles.streaming.features.chat.domain.entities.Stream
 import com.moviles.streaming.features.chat.domain.repositories.ChatRepository
@@ -18,6 +23,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import java.lang.reflect.Type
 import javax.inject.Inject
 
 class ChatRepositoryImp @Inject constructor(
@@ -26,7 +32,24 @@ class ChatRepositoryImp @Inject constructor(
     @WebSocketBaseUrl private val baseWsUrl: String
 ) : ChatRepository {
 
-    private val gson = Gson()
+    private val gson: Gson = GsonBuilder()
+        .registerTypeAdapter(
+            MessageContentDto::class.java,
+            object : JsonDeserializer<MessageContentDto> {
+                override fun deserialize(
+                    json: JsonElement,
+                    typeOfT: Type,
+                    context: JsonDeserializationContext
+                ): MessageContentDto {
+                    return if (json.isJsonObject) {
+                        MessageContentDto(json.asJsonObject.get("content")?.asString ?: "")
+                    } else {
+                        MessageContentDto(json.asString)
+                    }
+                }
+            }
+        )
+        .create()
     private var webSocket: WebSocket? = null
 
     override suspend fun getActiveStreams(): List<Stream> {
