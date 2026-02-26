@@ -1,6 +1,6 @@
 package com.moviles.streaming.core.network
 
-import com.moviles.streaming.features.chat.data.models.StreamsResponse
+import com.moviles.streaming.features.chat.data.dataresources.remote.model.StreamsResponse
 import com.moviles.streaming.features.user.data.dataresources.remote.model.LoginRequestDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserCreateDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserDto

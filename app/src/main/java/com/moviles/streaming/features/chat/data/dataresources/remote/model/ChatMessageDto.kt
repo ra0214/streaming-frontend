@@ -3,7 +3,7 @@ package com.moviles.streaming.features.chat.data.dataresources.remote.model
 data class ChatMessageDto(
     val type: String,
     val sender: String? = null,
-    val message: Any? = null
+    val message: String? = null
 )
 
 data class ChatSendDto(
