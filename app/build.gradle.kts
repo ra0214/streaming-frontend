@@ -50,8 +50,8 @@ android {
             val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
             val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
             
-            buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
-            buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
+            buildConfigField("String", "backend_rest_url", "\"$restUrl\"")
+            buildConfigField("String", "backend_ws_url", "\"$wsUrl\"")
             resValue("string", "app_name", "Streaming (DEV)")
         }
 
@@ -60,8 +60,8 @@ android {
             val restUrl = project.findProperty("backend_rest_url") ?: "http://35.169.196.84:8000/api/"
             val wsUrl = project.findProperty("backend_ws_url") ?: "ws://35.169.196.84:8001/ws/"
             
-            buildConfigField("String", "BASE_URL_STREAM", "\"$restUrl\"")
-            buildConfigField("String", "BASE_URL_WEBSOCKET", "\"$wsUrl\"")
+            buildConfigField("String", "backend_rest_url", "\"$restUrl\"")
+            buildConfigField("String", "backend_ws_url", "\"$wsUrl\"")
             resValue("string", "app_name", "Streaming")
         }
     }
@@ -104,6 +104,10 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

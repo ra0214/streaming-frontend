@@ -19,7 +19,7 @@ object NetworkModule {
     @StreamingRESTRetrofit
     fun provideStreamingRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL_STREAM)
+            .baseUrl(BuildConfig.backend_rest_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

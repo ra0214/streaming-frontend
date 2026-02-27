@@ -38,7 +38,7 @@ class LoginViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 val result = loginUseCase(_username.value, _password.value)
-                if (result.access_token.isNotEmpty()) {
+                if (result.accessToken.isNotEmpty()) {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 } else {
                     _uiState.update { it.copy(isLoading = false, error = "Credenciales incorrectas") }

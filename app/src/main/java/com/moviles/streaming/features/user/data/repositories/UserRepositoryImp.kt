@@ -4,7 +4,7 @@ import com.moviles.streaming.core.network.StreamingAPI
 import com.moviles.streaming.features.user.data.dataresources.remote.mapper.toDomain
 import com.moviles.streaming.features.user.data.dataresources.remote.model.LoginRequestDto
 import com.moviles.streaming.features.user.data.dataresources.remote.model.UserCreateDto
-import com.moviles.streaming.features.user.data.dataresources.remote.model.UserLoginResponseDto
+import com.moviles.streaming.features.user.domain.entities.LoginResponse
 import com.moviles.streaming.features.user.domain.entities.User
 import com.moviles.streaming.features.user.domain.repositories.UserRepository
 import javax.inject.Inject
@@ -29,12 +29,12 @@ class UserRepositoryImp @Inject constructor(
     override suspend fun login(
         username: String,
         password: String
-    ): UserLoginResponseDto {
+    ): LoginResponse {
         return streamingAPI.login(
             LoginRequestDto(
                 username = username,
                 password = password
             )
-        )
+        ).toDomain()
     }
 }
