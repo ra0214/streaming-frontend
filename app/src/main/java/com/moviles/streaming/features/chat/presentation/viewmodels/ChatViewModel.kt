@@ -1,10 +1,11 @@
-package com.moviles.streaming.features.chat.presentation
+package com.moviles.streaming.features.chat.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.moviles.streaming.features.chat.domain.usecases.ConnectToChatUseCase
 import com.moviles.streaming.features.chat.domain.usecases.DisconnectChatUseCase
 import com.moviles.streaming.features.chat.domain.usecases.SendChatMessageUseCase
+import com.moviles.streaming.features.chat.presentation.screens.ChatUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

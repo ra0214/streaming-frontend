@@ -9,14 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moviles.streaming.features.user.presentation.viewmodel.RegisterViewModel
 
@@ -35,15 +34,13 @@ fun RegisterScreen(
     val roles = listOf("follower", "streamer")
 
     LaunchedEffect(uiState.isSuccess) {
-        if (uiState.isSuccess) {
-            onRegisterSuccess()
-        }
+        if (uiState.isSuccess) onRegisterSuccess()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -51,7 +48,7 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Column(
@@ -64,24 +61,24 @@ fun RegisterScreen(
                     text = "Crear Cuenta",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
 
                 OutlinedTextField(
                     value = username,
                     onValueChange = { viewModel.onUsernameChange(it) },
-                    label = { Text("Usuario", color = Color.Gray) },
+                    label = { Text("Usuario", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.DarkGray,
-                        cursorColor = Color.White
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
@@ -97,25 +94,25 @@ fun RegisterScreen(
                         value = rol,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Rol", color = Color.Gray) },
+                        label = { Text("Rol", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier.menuAnchor().fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.DarkGray
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.background(Color(0xFF1A1A1A))
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         roles.forEach { selectionOption ->
                             DropdownMenuItem(
-                                text = { Text(selectionOption, color = Color.White) },
+                                text = { Text(selectionOption, color = MaterialTheme.colorScheme.onSurface) },
                                 onClick = {
                                     viewModel.onRolChange(selectionOption)
                                     expanded = false
@@ -130,25 +127,25 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { viewModel.onPasswordChange(it) },
-                    label = { Text("Contraseña", color = Color.Gray) },
+                    label = { Text("Contraseña", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.DarkGray,
-                        cursorColor = Color.White
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 if (uiState.isLoading) {
-                    CircularProgressIndicator(color = Color.White)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 } else {
                     Button(
                         onClick = { viewModel.onRegisterClick() },
@@ -158,8 +155,8 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(12.dp),
                         enabled = username.isNotBlank() && password.isNotBlank(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         )
                     ) {
                         Text("REGISTRARSE", fontWeight = FontWeight.Bold)
@@ -169,13 +166,16 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 TextButton(onClick = onBackToLogin) {
-                    Text("¿Ya tienes cuenta? Inicia sesión", color = Color.White)
+                    Text(
+                        "¿Ya tienes cuenta? Inicia sesión",
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
 
                 AnimatedVisibility(visible = uiState.error != null) {
                     Text(
                         text = uiState.error ?: "",
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(top = 16.dp)
                     )

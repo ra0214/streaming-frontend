@@ -8,8 +8,8 @@ import androidx.navigation.toRoute
 import com.moviles.streaming.features.user.presentation.screens.LoginScreen
 
 import com.moviles.streaming.features.user.presentation.screens.RegisterScreen
-import com.moviles.streaming.features.chat.presentation.ChatScreen
-import com.moviles.streaming.features.chat.presentation.StreamListScreen
+import com.moviles.streaming.features.chat.presentation.screens.ChatScreen
+import com.moviles.streaming.features.chat.presentation.screens.StreamListScreen
 
 @Composable
 fun NavigationWrapper() {

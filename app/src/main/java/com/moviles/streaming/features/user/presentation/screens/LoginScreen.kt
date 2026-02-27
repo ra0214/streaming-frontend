@@ -13,12 +13,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moviles.streaming.features.user.presentation.viewmodel.LoginViewModel
 
@@ -33,15 +32,13 @@ fun LoginScreen(
     val password by viewModel.password.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.isSuccess) {
-        if (uiState.isSuccess) {
-            onLoginSuccess()
-        }
+        if (uiState.isSuccess) onLoginSuccess()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -49,7 +46,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
@@ -63,36 +60,50 @@ fun LoginScreen(
                     text = "Iniciar Sesión",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 OutlinedTextField(
                     value = username,
                     onValueChange = { viewModel.onUsernameChange(it) },
-                    label = { Text("Correo Electrónico", color = Color.Gray) },
-                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                    label = { Text("Usuario", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Email,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.Gray
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
                 OutlinedTextField(
                     value = password,
                     onValueChange = { viewModel.onPasswordChange(it) },
-                    label = { Text("Contraseña", color = Color.Gray) },
-                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    label = { Text("Contraseña", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.Gray
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
@@ -100,9 +111,8 @@ fun LoginScreen(
                     uiState.error?.let {
                         Text(
                             text = it,
-                            color = Color.Red,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                            modifier = Modifier.padding(top = 16.dp)
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
                 }
@@ -113,12 +123,15 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     enabled = !uiState.isLoading,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
                         Text(
@@ -132,7 +145,7 @@ fun LoginScreen(
                 TextButton(onClick = onNavigateToRegister) {
                     Text(
                         text = "¿No tienes cuenta? Regístrate",
-                        color = Color(0xFF10B981),
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 14.sp
                     )
                 }

@@ -1,4 +1,4 @@
-package com.moviles.streaming.features.chat.presentation
+package com.moviles.streaming.features.chat.presentation.screens
 
 import com.moviles.streaming.features.chat.domain.entities.Stream
 
@@ -7,4 +7,3 @@ data class StreamListUiState(
     val isLoading: Boolean = false,
     val error: String? = null
 )
-
