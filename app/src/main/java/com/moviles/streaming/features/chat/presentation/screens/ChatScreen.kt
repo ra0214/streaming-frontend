@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moviles.streaming.features.chat.domain.entities.ChatMessage
+import com.moviles.streaming.features.chat.presentation.viewmodels.ChatEvent
 import com.moviles.streaming.features.chat.presentation.viewmodels.ChatViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,11 +33,21 @@ fun ChatScreen(
     streamerId: Int,
     viewerId: Int,
     onBack: () -> Unit,
-    viewModel: ChatViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
+    viewModel: ChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val inputText by viewModel.inputText.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Escuchar eventos únicos del SharedFlow
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ChatEvent.Error -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
 
     LaunchedEffect(streamerId, viewerId) {
         viewModel.connect(streamerId, viewerId)
@@ -144,7 +156,8 @@ fun ChatScreen(
                 }
             }
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LazyColumn(
             state = listState,
